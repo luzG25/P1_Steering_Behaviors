@@ -55,11 +55,11 @@ public class ArriveController extends Controller{
         
 
         if ( distanceToTarget < target_radius) {
-            controlVariables[VARIABLE_BRAKE] = 0.5;
+            controlVariables[VARIABLE_BRAKE] = 0.35;
         }
 
         else if (distanceToTarget > desaceleration_radius) {
-            controlVariables[VARIABLE_THROTTLE] = 1;
+            controlVariables[VARIABLE_THROTTLE] = 0.14;
         }
 
         else{
