@@ -14,7 +14,7 @@ public class Game {
     the list of game objects (Car or obstacles), the dimeions of the map, and
     the desired frames per second at which we want to run.
     */
-    List<GameObject> m_objects = new ArrayList<>();
+    public List<GameObject> m_objects = new ArrayList<>();
     double m_width, m_height;    
     int m_frames_per_second;
     

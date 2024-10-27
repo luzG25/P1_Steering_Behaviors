@@ -7,7 +7,8 @@ package engine;
  */
 public class RotatedRectangle {
     public static class _Vector2D {
-        double x,y;
+        public double x;
+        public double y;
         
         void add(_Vector2D v) {
             x+=v.x;
