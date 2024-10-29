@@ -20,57 +20,68 @@ public class ArriveController extends Controller{
 
     @Override
     public void update(Car subject, Game game, double delta_t, double[] controlVariables) {
-         // Inicializar variáveis de controle
-         controlVariables[VARIABLE_STEERING] = 0;
-         controlVariables[VARIABLE_THROTTLE] = 0;
-         controlVariables[VARIABLE_BRAKE] = 0;
-         
-         // Calcular a direção para o alvo (car1)
-         double dx = target.getX() - subject.getX();
-         double dy = target.getY() - subject.getY();
-         double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
- 
-         // Calcular o ângulo desejado em relação ao alvo
-         double desiredAngle = Math.atan2(dy, dx);
- 
-         // Calcular a diferença de ângulo entre o carro perseguidor e o alvo
-         double angleDifference = desiredAngle - subject.getAngle();
-
+        controlVariables[VARIABLE_STEERING] = 0;
+        controlVariables[VARIABLE_THROTTLE] = 0;
+        controlVariables[VARIABLE_BRAKE] = 0;
         
- 
-         // Normalizar o ângulo para evitar mudanças bruscas
-         if (angleDifference > Math.PI) angleDifference -= 2 * Math.PI;
-         if (angleDifference < -Math.PI) angleDifference += 2 * Math.PI;
- 
-         // Ajustar a direção do volante para alinhar com o alvo
-         if (angleDifference > 0.1) {
-             controlVariables[VARIABLE_STEERING] = 1; // Virar à direita
-         } else if (angleDifference < -0.1) {
-             controlVariables[VARIABLE_STEERING] = -1; // Virar à esquerda
-         } else {
-             controlVariables[VARIABLE_STEERING] = 0; // Alinhado
-         }
-
-
+        // Calcular direção e distância ao alvo
+        double dx = target.getX() - subject.getX();
+        double dy = target.getY() - subject.getY();
+        double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
         
-
-        if ( distanceToTarget < target_radius) {
-            controlVariables[VARIABLE_BRAKE] = 0.35;
+        // Calcular ângulo desejado e diferença de ângulo
+        double desiredAngle = Math.atan2(dy, dx);
+        double angleDifference = desiredAngle - subject.getAngle();
+        
+        if (angleDifference > Math.PI) angleDifference -= 2 * Math.PI;
+        if (angleDifference < -Math.PI) angleDifference += 2 * Math.PI;
+    
+        if (angleDifference > 0.1) {
+            controlVariables[VARIABLE_STEERING] = 1;
+        } else if (angleDifference < -0.1) {
+            controlVariables[VARIABLE_STEERING] = -1;
+        } else {
+            controlVariables[VARIABLE_STEERING] = 0;
         }
-
-        else if (distanceToTarget > desaceleration_radius) {
-            controlVariables[VARIABLE_THROTTLE] = 0.14;
+        
+        // Se estiver dentro do target_radius, parar
+        if (distanceToTarget < target_radius) {
+            controlVariables[VARIABLE_THROTTLE] = 0;
+            
+            System.out.println(subject.getSpeed());
+            if (subject.getSpeed() > 8){
+                controlVariables[VARIABLE_BRAKE] = 1;  // Parada total
+            } else {
+                controlVariables[VARIABLE_BRAKE] = 0;  
+            }
+        } else {
+            if (distanceToTarget > desaceleration_radius){
+                controlVariables[VARIABLE_THROTTLE] = 1;
+            }else
+            {
+                // Determinar velocidade alvo baseada na distância
+                double maxSpeed = 1.0; // Defina a velocidade máxima apropriada
+                double targetSpeed;
+                
+            
+                targetSpeed = maxSpeed * (distanceToTarget / desaceleration_radius);
+                
+        
+                // Calcular a aceleração necessária
+                double currentSpeed = subject.getSpeed();
+                double acceleration = (targetSpeed - currentSpeed) / delta_t;
+                double maxAcceleration = 0.5; // Limite máximo de aceleração
+        
+                if (Math.abs(acceleration) > maxAcceleration) {
+                    acceleration = Math.signum(acceleration) * maxAcceleration;
+                }
+        
+                // Aplicar aceleração calculada aos controles
+                controlVariables[VARIABLE_THROTTLE] = Math.max(0, acceleration / maxAcceleration);
+                controlVariables[VARIABLE_BRAKE] = acceleration < 0 ? -acceleration / maxAcceleration : 0;
+            }
         }
-
-        else{
-            // Acelerar em direção ao alvo
-            controlVariables[VARIABLE_THROTTLE] = 0; 
-            controlVariables[VARIABLE_BRAKE] = 0;
-
-        }
-
-  
-
     }
+    
 
 }
