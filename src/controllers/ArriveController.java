@@ -48,7 +48,7 @@ public class ArriveController extends Controller{
         if (distanceToTarget < target_radius) {
             controlVariables[VARIABLE_THROTTLE] = 0;
             
-            System.out.println(subject.getSpeed());
+            //System.out.println(subject.getSpeed());
             if (subject.getSpeed() > 8){
                 controlVariables[VARIABLE_BRAKE] = 1;  // Parada total
             } else {

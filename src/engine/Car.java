@@ -23,7 +23,6 @@ public class Car extends GameObject {
         
     public Car(String graphicsFileName, double x, double y, double alpha, Controller c) throws Exception {
         File file = new File(graphicsFileName);
-        System.out.println(file.getAbsolutePath());
         m_img = ImageIO.read(file);
         m_x = x;
         m_y = y;
